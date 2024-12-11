@@ -1,12 +1,16 @@
-// Das Array, das den Zustand des Spielfelds speichert
+// The array that stores the state of the game board
 let fields = [null, null, null, null, null, null, null, null, null];
-let currentPlayer = "circle"; // Aktueller Spieler
-let gameOver = false; // Initial: Spiel läuft
+// Keeps track of the current player ('circle' or 'cross')
+let currentPlayer = "circle";
+// Boolean to indicate if the game is over
+let gameOver = false;
 
+// Initializes the game by rendering the board
 function init() {
   render();
 }
 
+// Renders the Tic Tac Toe board and updates the HTML
 function render() {
   const contentDiv = document.getElementById("content");
   let tableHTML = '<table class="tic-tac-toe">';
@@ -22,7 +26,7 @@ function render() {
           ? createAnimatedCross()
           : "";
 
-      // onclick-Attribut hinzufügen
+      // Adds an onclick attribute to handle cell clicks
       tableHTML += `<td onclick="handleClick(${index}, this)" id="cell-${index}">${symbol}</td>`;
     }
     tableHTML += "</tr>";
@@ -32,37 +36,39 @@ function render() {
   contentDiv.innerHTML = tableHTML;
 }
 
+// Handles user clicks on a cell and updates the game state
 function handleClick(index, tdElement) {
-  // Wenn das Spiel vorbei ist, keine weitere Aktion zulassen
+  // If the game is over, do nothing
   if (gameOver) return;
 
-  // Überprüfen, ob das Feld bereits belegt ist
+  // Check if the cell is already occupied
   if (!fields[index]) {
-    // Das aktuelle Symbol setzen
+    // Set the current player's symbol in the array
     fields[index] = currentPlayer;
 
-    // Den entsprechenden HTML-Code in das angeklickte <td> einfügen
+    // Update the HTML of the clicked cell
     tdElement.innerHTML =
       currentPlayer === "circle"
         ? createAnimatedCircle()
         : createAnimatedCross();
 
-    // Entfernen des onclick-Attributs
+    // Remove the onclick attribute to prevent further clicks
     tdElement.removeAttribute("onclick");
 
-    // Überprüfen, ob das Spiel vorbei ist
+    // Check if the game is won
     const winningCombination = checkWin();
     if (winningCombination) {
-      gameOver = true; // Spiel beenden
+      gameOver = true; // End the game
       drawWinningLine();
       return;
     }
 
-    // Wechseln zum nächsten Spieler
+    // Switch to the next player
     currentPlayer = currentPlayer === "circle" ? "cross" : "circle";
   }
 }
 
+// Checks if there is a winning combination on the board
 function checkWin() {
   const winningCombinations = [
     [0, 1, 2],
@@ -78,12 +84,13 @@ function checkWin() {
   for (const combination of winningCombinations) {
     const [a, b, c] = combination;
     if (fields[a] && fields[a] === fields[b] && fields[a] === fields[c]) {
-      return combination; // Gibt die siegreiche Kombination zurück
+      return combination; // Return the winning combination
     }
   }
-  return null; // Kein Sieg
+  return null; // No winner
 }
 
+// Draws a line across the winning cells
 function drawWinningLine() {
   const winningCombination = checkWin();
   if (!winningCombination) return;
@@ -123,10 +130,11 @@ function drawWinningLine() {
   );
   svg.appendChild(svgLine);
 
-  container.style.position = "relative"; // Damit das SVG korrekt positioniert wird
+  container.style.position = "relative"; // Ensure proper positioning of the SVG
   container.appendChild(svg);
 }
 
+// Creates an animated circle SVG
 function createAnimatedCircle() {
   return `<svg width="70" height="70" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
               <circle cx="25" cy="25" r="20" stroke="#00B0EF" stroke-width="4" fill="none" stroke-dasharray="126" stroke-dashoffset="126">
@@ -135,6 +143,7 @@ function createAnimatedCircle() {
             </svg>`;
 }
 
+// Creates an animated cross SVG
 function createAnimatedCross() {
   return `<svg width="70" height="70" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
               <line x1="10" y1="10" x2="40" y2="40" stroke="#FFC000" stroke-width="4" stroke-dasharray="42" stroke-dashoffset="42">
@@ -146,7 +155,9 @@ function createAnimatedCross() {
             </svg>`;
 }
 
+// Resets the game to its initial state
 function restartGame() {
   fields = [null, null, null, null, null, null, null, null, null];
+  gameOver = false; // Reset the game status
   render();
 }
